@@ -10,21 +10,21 @@ SPDX-License-Identifier: CC-BY-SA-4.0
   <link rel="stylesheet" type="text/css" href="activity.css">
   <script src="activity.js"></script>
 </head>
-<body class="fvp fhp" onresize="onResize()">
+<body class="fvp fhp">
 <div id="topdiv">
   <div id="sidebar" class="fvp">
     <div class="fvc fhp">
-      <img id="bar_play" src="resource/bar_play.svg" alt="Εκκίνηση" title="Εκκίνηση" class="menuicon" onclick="onStart(event)">
-      <img id="bar_pause" src="resource/bar_pause.svg" alt="Παύση" title="Παύση" class="menuicon hidden" onclick="onPause(event)">
-      <img id="bar_reset" src="resource/bar_reset.svg" alt="Επαναφορά" title="Επαναφορά" class="menuicon" onclick="onReset(event)">
+      <img id="bar_play" src="resource/bar_play.svg" alt="Εκκίνηση" title="Εκκίνηση" class="menuicon">
+      <img id="bar_pause" src="resource/bar_pause.svg" alt="Παύση" title="Παύση" class="menuicon hidden">
+      <img id="bar_reset" src="resource/bar_reset.svg" alt="Επαναφορά" title="Επαναφορά" class="menuicon">
     </div>
     <div class="fvc fhpc">
       <p class="label">Βήματα:</p>
-      <input id="steps" type="number" value="0" min="0" max="9999" class="input" onchange="onStepsChange(event)" title="0 σημαίνει κίνηση για πάντα">
+      <input id="steps" type="number" value="0" min="0" max="9999" class="input" title="0 σημαίνει κίνηση για πάντα">
     </div>
     <div class="fvc fhpc">
       <p class="label">Μονάδα:</p>
-      <select id="unit" class="input" onchange="onUnitChange(event)" title="Μονάδα κίνησης">
+      <select id="unit" class="input" title="Μονάδα κίνησης">
         <option value="0">Ώρες</option>
         <option value="1" selected="selected">Ημέρες</option>
         <option value="2">Μήνες</option>
@@ -32,21 +32,21 @@ SPDX-License-Identifier: CC-BY-SA-4.0
     </div>
     <div class="fvc fhpc">
       <p class="label">Ταχύτητα:</p>
-      <input id="speed" type="range" value="50" min="1" max="99" class="input" onchange="onSpeedChange(event)" title="Ταχύτητα κίνησης">
+      <input id="speed" type="range" value="50" min="1" max="99" class="input" title="Ταχύτητα κίνησης">
     </div>
     <p class="fvc">Ημερομηνία:<br><span id="now">01-01-2000 00:00</span></p>
     <div class="fvc fhp">
-      <img src="resource/bar_home.svg" alt="Αρχική" title="Επιστροφή στην αρχική σελίδα" class="menuicon" onclick="onHome(event)">
-      <img src="resource/bar_help.svg" alt="Βοήθεια" title="Βοήθεια" class="menuicon" onclick="onHelp(event)">
-      <img src="resource/bar_about.svg" alt="Περί" title="Περί" class="menuicon" onclick="onAbout(event)">
+      <img id="bar_home" src="resource/bar_home.svg" alt="Αρχική" title="Επιστροφή στην αρχική σελίδα" class="menuicon">
+      <img id="bar_help" src="resource/bar_help.svg" alt="Βοήθεια" title="Βοήθεια" class="menuicon">
+      <img id="bar_about" src="resource/bar_about.svg" alt="Περί" title="Περί" class="menuicon">
     </div>
   </div>
   <div id="solar" class="fvp fhp">
-    <img id="sun" src="resource/sun.svg" alt="Ήλιος" title="Ήλιος"></img>
-    <img id="earth" src="resource/earth.svg" alt="Γη" title="Γη"></img>
-    <img id="earth_shadow" src="resource/earth_shadow.svg" alt="Γη" title="Γη"></img>
-    <img id="moon" src="resource/moon.svg" alt="Φεγγάρι" title="Φεγγάρι"></img>
-    <img id="moon_shadow" src="resource/moon_shadow.svg" alt="Φεγγάρι" title="Φεγγάρι"></img>
+    <img id="sun" src="resource/sun.svg" alt="Ήλιος" title="Ήλιος">
+    <img id="earth" src="resource/earth.svg" alt="Γη" title="Γη">
+    <img id="earth_shadow" src="resource/earth_shadow.svg" alt="Γη" title="Γη">
+    <img id="moon" src="resource/moon.svg" alt="Φεγγάρι" title="Φεγγάρι">
+    <img id="moon_shadow" src="resource/moon_shadow.svg" alt="Φεγγάρι" title="Φεγγάρι">
   </div>
 </div>
 <script>

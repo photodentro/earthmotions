@@ -2,36 +2,33 @@
 Copyright (C) 2018 Alkis Georgopoulos <alkisg@gmail.com>.
 SPDX-License-Identifier: CC-BY-SA-4.0
 */
-const hour_msec = 60*60*1000;
-const day_msec = 24*hour_msec;
-const epoch = new Date('01/01/2000 UTC');
-const earth_period_msec = 365.25*day_msec;
-const moon_period_msec = 27.32*day_msec;  //TODO: sidereal or synodic month?
-const month_msec = earth_period_msec/12;
-const units_msec = [hour_msec, day_msec, month_msec];
+var hourMSec = 60 * 60 * 1000;
+var dayMSec = 24 * hourMSec;
+var epoch = new Date('01/01/2000 UTC');
+var earthPeriodMSec = 365.25 * dayMSec;
+var moonPeriodMsec = 27.32 * dayMSec;
+var monthMSec = earthPeriodMSec / 12;
+var unitsMSec = [hourMSec, dayMSec, monthMSec];
 var act = null;  // activity object, see initActivity()
+
+// ES6 string templates don't work in old Android WebView
+function sformat(format) {
+  var args = arguments;
+  var i = 0;
+  return format.replace(/{(\d*)}/g, function sformatReplace(match, number) {
+    i += 1;
+    if (typeof args[number] !== 'undefined') {
+      return args[number];
+    }
+    if (typeof args[i] !== 'undefined') {
+      return args[i];
+    }
+    return match;
+  });
+}
 
 function ge(element) {
   return document.getElementById(element);
-}
-
-function initActivity() {
-  if (!act) {  // first run
-    console.clear();
-    console.log(ge('sun'));
-  }
-  act = {
-    step: 0,
-    steps: 0,
-    unit: 1,
-    speed: 50,
-    now: new Date(epoch.getTime()),
-    interval: null
-  }
-  onStepsChange();
-  onUnitChange();
-  onSpeedChange();
-  onResize();
 }
 
 function onStart(event) {
@@ -39,7 +36,7 @@ function onStart(event) {
     ge('bar_play').style.display = 'none';
     ge('bar_pause').style.display = 'block';
     // Map 1..99 to 1000..10
-    act.interval = setInterval(nextOrbits, 1000/act.speed);
+    act.interval = setInterval(nextOrbits, 1000 / act.speed);
   }
 }
 
@@ -60,18 +57,18 @@ function onReset(event) {
 
 function onStepsChange(event) {
   onPause(event);
-  act.steps = ge('steps').value;
+  act.steps = parseInt(ge('steps').value, 10);
 }
 
 function onUnitChange(event) {
-  act.unit = ge('unit').value;
+  act.unit = parseInt(ge('unit').value, 10);
 }
 
 function onSpeedChange(event) {
-  act.speed = ge('speed').value;
+  act.speed = parseInt(ge('speed').value, 10);
   if (act.interval) {
     clearInterval(act.interval);
-    act.interval = setInterval(nextOrbits, 1000/act.speed);
+    act.interval = setInterval(nextOrbits, 1000 / act.speed);
   }
 }
 
@@ -80,56 +77,70 @@ function onHome(event) {
 }
 
 function onHelp(event) {
-  alert("Επιλέξτε πλήθος βημάτων (ή 0 για άπειρο) και μονάδα κίνησης (ώρες, ημέρες ή μήνες). Στη συνέχεια πατήστε το κουμπί εκκίνησης (▶).");
+  alert('Επιλέξτε πλήθος βημάτων (ή 0 για άπειρο) και μονάδα κίνησης (ώρες, ημέρες ή μήνες). Στη συνέχεια πατήστε το κουμπί εκκίνησης (▶).');
 }
 
 function onAbout(event) {
-  window.open("credits/index_DS_II.html");
+  window.open('credits/index_DS_II.html');
 }
 
 // Return a number between [0, 1)
 function dateToEarthAngle(d) {
-  var periods = (d - epoch)/earth_period_msec;
+  var periods = (d - epoch) / earthPeriodMSec;
   return periods - Math.floor(periods);
 }
 
 // Return a number between [0, 1)
 function dateToMoonAngle(d) {
-  var periods = (d - epoch)/moon_period_msec;
+  var periods = (d - epoch) / moonPeriodMsec;
   return periods - Math.floor(periods);
 }
 
 function drawOrbits() {
   var sun = ge('sun');
-  var sun_rect = sun.getBoundingClientRect();
+  var sunRect = sun.getBoundingClientRect();
   var earth = ge('earth');
-  var earth_shadow = ge('earth_shadow');
+  var earthShadow = ge('earth_shadow');
   var ea = dateToEarthAngle(act.now);
-  earth.style.left = earth_shadow.style.left = sun_rect.left + sun_rect.width/2 + 1.4*sun_rect.width*Math.cos(2*Math.PI*ea) - earth.offsetWidth/2 + 'px';
-  earth.style.top = earth_shadow.style.top = sun_rect.top + sun_rect.height/2 + 1.4*sun_rect.height*Math.sin(2*Math.PI*ea) - earth.offsetHeight/2 + 'px';
-  earth.style.transform = "rotate(" + 360*365.25*ea + "deg)";
-  earth_shadow.style.transform = "rotate(" + 360*ea + "deg)";
-  var moon=ge('moon');
-  var moon_shadow=ge('moon_shadow');
+  var moon = ge('moon');
+  var moonShadow = ge('moon_shadow');
   var ma = dateToMoonAngle(act.now);
-  moon.style.left = moon_shadow.style.left = earth.offsetLeft + earth.offsetWidth/2 + 1*earth.offsetWidth*Math.cos(2*Math.PI*ma) - moon.offsetWidth/2 + 'px';
-  moon.style.top = moon_shadow.style.top = earth.offsetTop + earth.offsetHeight/2 + 1*earth.offsetWidth*Math.sin(2*Math.PI*ma) - moon.offsetHeight/2 + 'px';
-  moon.style.transform = "rotate(" + 360*ma + "deg)";
-  moon_shadow.style.transform = "rotate(" + 360*ea + "deg)";
-  ge('now').innerHTML =
-    ("0" + act.now.getUTCDate()).slice(-2) + "-" +
-    ("0" + (act.now.getUTCMonth()+1)).slice(-2) + "-" +
-    act.now.getUTCFullYear() + " " +
-    ("0" + act.now.getUTCHours()).slice(-2) + ":" +
-    ("0" + act.now.getUTCMinutes()).slice(-2);
+
+  earth.style.left = sformat('{}px', sunRect.left + sunRect.width / 2
+    + 1.4 * sunRect.width * Math.cos(2 * Math.PI * ea)
+    - earth.offsetWidth / 2);
+  earthShadow.style.left = earth.style.left;
+  earth.style.top = sformat('{}px', sunRect.top + sunRect.height / 2
+    + 1.4 * sunRect.height * Math.sin(2 * Math.PI * ea)
+    - earth.offsetHeight / 2);
+  earthShadow.style.top = earth.style.top;
+  earth.style.transform = sformat('rotate({}deg)', 360 * 365.25 * ea);
+  earthShadow.style.transform = sformat('rotate({}deg)', 360 * ea);
+  moon.style.left = sformat('{}px', earth.offsetLeft + earth.offsetWidth / 2
+    + 1 * earth.offsetWidth * Math.cos(2 * Math.PI * ma)
+    - moon.offsetWidth / 2);
+  moonShadow.style.left = moon.style.left;
+  moon.style.top = sformat('{}px', earth.offsetTop + earth.offsetHeight / 2
+    + 1 * earth.offsetWidth * Math.sin(2 * Math.PI * ma)
+    - moon.offsetHeight / 2);
+  moonShadow.style.top = moon.style.top;
+  moon.style.transform = sformat('rotate({}deg)', 360 * ma);
+  moonShadow.style.transform = sformat('rotate({}deg)', 360 * ea);
+  ge('now').innerHTML = sformat('{}-{}-{} {}:{}',
+    sformat('0{}', act.now.getUTCDate()).slice(-2),
+    sformat('0{}', act.now.getUTCMonth() + 1).slice(-2),
+    act.now.getUTCFullYear(),
+    sformat('0{}', act.now.getUTCHours()).slice(-2),
+    sformat('0{}', act.now.getUTCMinutes()).slice(-2));
 }
 
 function nextOrbits() {
-  act.now = new Date(act.now.getTime() + units_msec[act.unit]);
-  if (act.steps != 0) {
+  act.now = new Date(act.now.getTime() + unitsMSec[act.unit]);
+  if (act.steps !== 0) {
     act.step += 1;
-    if (act.step >= act.steps)
+    if (act.step >= act.steps) {
       onPause();
+    }
   }
   drawOrbits();
 }
@@ -137,10 +148,41 @@ function nextOrbits() {
 function onResize() {
   var w = window.innerWidth;
   var h = window.innerHeight;
-  if (w/h < 640/360) {
-    document.body.style.fontSize = 10*w/640 + "px";
+  if (w / h < 640 / 360) {
+    document.body.style.fontSize = sformat('{}px', 10 * w / 640);
   } else {
-    document.body.style.fontSize = 10*h/360 + "px";
+    document.body.style.fontSize = sformat('{}px', 10 * h / 360);
   }
   drawOrbits();
+}
+
+function addEvents() {
+  document.body.onresize = onResize;
+  ge('bar_play').onclick = onStart;
+  ge('bar_pause').onclick = onPause;
+  ge('bar_reset').onclick = onReset;
+  ge('steps').onchange = onStepsChange;
+  ge('unit').onchange = onUnitChange;
+  ge('speed').onchange = onSpeedChange;
+  ge('bar_home').onclick = onHome;
+  ge('bar_help').onclick = onHelp;
+  ge('bar_about').onclick = onAbout;
+}
+
+function initActivity() {
+  if (!act) {  // first run
+    addEvents();
+  }
+  act = {
+    step: 0,
+    steps: 0,
+    unit: 1,
+    speed: 50,
+    now: new Date(epoch.getTime()),
+    interval: null,
+  };
+  onStepsChange();
+  onUnitChange();
+  onSpeedChange();
+  onResize();
 }
