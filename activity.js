@@ -55,6 +55,24 @@ function onReset(event) {
   initActivity();
 }
 
+
+function onToggleFullScreen(event) {
+  var doc = window.document;
+  var docEl = doc.documentElement;
+
+  var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen
+    || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+  var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen
+    || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+  if (!doc.fullscreenElement && !doc.mozFullScreenElement
+    && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    requestFullScreen.call(docEl);
+  } else {
+    cancelFullScreen.call(doc);
+  }
+}
+
 function onStepsChange(event) {
   onPause(event);
   act.steps = parseInt(ge('steps').value, 10);
@@ -161,6 +179,7 @@ function addEvents() {
   ge('bar_play').onclick = onStart;
   ge('bar_pause').onclick = onPause;
   ge('bar_reset').onclick = onReset;
+  ge('bar_fullscreen').onclick = onToggleFullScreen;
   ge('steps').onchange = onStepsChange;
   ge('unit').onchange = onUnitChange;
   ge('speed').onchange = onSpeedChange;
