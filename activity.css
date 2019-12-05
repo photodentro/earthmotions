@@ -49,6 +49,10 @@ input, select, range, p {
     font-size: 1.5em;
 }
 
+html {
+    background-color: lime; /* rgb(10,37,91);  /* Appears momentarily on loading or fullscreen */
+}
+
 body {
     background: rgb(10,37,91) url('resource/background.svg') no-repeat center center fixed;
     -webkit-background-size: cover;
